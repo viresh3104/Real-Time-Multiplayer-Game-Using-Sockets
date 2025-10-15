@@ -25,7 +25,7 @@ io.on("connection", (socket) => {
 
 mongoose
   .connect(process.env.DATABASE)
-  .then(() => console.log("Connected to db, yeahhhhhh 🎉"))
+  .then(() => console.log("Connected to database"))
   .catch((err) => console.error("Database connection error:"));
 
 const PORT = process.env.PORT;

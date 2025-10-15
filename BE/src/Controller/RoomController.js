@@ -2,14 +2,12 @@ const { v4: uuidv4 } = require("uuid");
 const Room = require("../model/RoomModel");
 
 const createRoom = async (req, res) => {
-  const roomToken = uuidv4();
   const { ownerSocketId } = req.body;
-
   if (!ownerSocketId) {
     return res.status(400).json({ error: "Owner socket ID is required" });
   }
 
-  // Assign the first color (red) to the room owner
+  const roomToken = uuidv4();
   const ownerColor = "red";
 
   const newRoom = new Room({
@@ -57,18 +55,15 @@ const createRoom = async (req, res) => {
     chatHistory: [],
   });
 
-  await newRoom.save();
-
-  // Join the owner to the room socket
   const io = req.app.get("socket.io");
   io.sockets.sockets.get(ownerSocketId)?.join(roomToken);
 
-  // Notify the owner that the room has been created and they've been added as a player
   io.to(ownerSocketId).emit("roomCreated", {
     roomToken,
     playerColor: ownerColor,
   });
 
+  await newRoom.save();
   res.status(200).json({ roomToken, playerColor: ownerColor });
 };
 
